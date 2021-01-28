@@ -27,6 +27,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.github.boltydawg.horseoverhaul.CustomLang;
 import com.github.boltydawg.horseoverhaul.Main;
 import com.github.boltydawg.horseoverhaul.NamePrompt;
 
@@ -148,14 +149,14 @@ public class OwnershipListener implements Listener {
 					else {
 						
 						event.setCancelled(true);
-						player.sendMessage(ChatColor.RED + "You must be holding this horse's deed in your off hand in order to rename it!");
+						player.sendMessage(ChatColor.RED + CustomLang.getConfig().getString("msg.renameWarning"));
 						
 					}
 				}
 				else {
 					
 					event.setCancelled(true);
-					player.sendMessage("you can only rename a horse that you own!");
+					player.sendMessage(CustomLang.getConfig().getString("msg.renameBlocked"));
 					
 				}	
 			}
@@ -167,7 +168,7 @@ public class OwnershipListener implements Listener {
 					if( !abHorse.getOwner().getUniqueId().equals(player.getUniqueId()) ) {
 						
 						if( main != null && main.hasItemMeta() && main.getItemMeta().hasDisplayName() 
-								&& main.getItemMeta().getDisplayName().contains("Deed to ")
+								&& main.getItemMeta().getDisplayName().contains("Deed to")
 								&& main.getItemMeta().hasLore()
 								&& main.getItemMeta().getLore().get(0).contains("Property of")
 								&& main.getType().equals(Material.WRITTEN_BOOK) ) {

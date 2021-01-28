@@ -22,7 +22,7 @@ public class NamePrompt extends StringPrompt {
 	@Override
 	public String getPromptText(ConversationContext context) {
 		
-		return ChatColor.BLUE + "What would you like to name your new steed?" + ChatColor.RESET + '\n' + ChatColor.GRAY + "(type your answer in chat)";
+		return ChatColor.BLUE + CustomLang.getConfig().getString("msg.nameSteedPrompt") + ChatColor.RESET + '\n' + ChatColor.GRAY + "(type your answer in chat)";
 		
 	}
 
@@ -47,7 +47,7 @@ public class NamePrompt extends StringPrompt {
 		
 		if(ChatColor.stripColor(name).length() > 16) {
 			
-			context.getForWhom().sendRawMessage(ChatColor.RED + "Name too long! Must be at most 16 characters");
+			context.getForWhom().sendRawMessage(ChatColor.RED + CustomLang.getConfig().getString("msg.nameTooLongWarning"));
 			return new NamePrompt(player,abHorse);
 			
 		}

@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityBreedEvent;
 
+import com.github.boltydawg.horseoverhaul.CustomLang;
 import com.github.boltydawg.horseoverhaul.StatHorse;
 
 public class BreedingListener implements Listener{
@@ -34,13 +35,13 @@ public class BreedingListener implements Listener{
 				
 				String r = ChatColor.RESET + ChatColor.RED.toString();
 				if ( fneut && mneut ) {
-					player.sendMessage( r + "Both " + father.getName() + r + " and " + mother.getName() + r + " are neutered! The breed attempt fails");
+					player.sendMessage( r + CustomLang.getConfig().getString("msg.breedFailAlert2"));
 				}
 				else if( fneut ) {
-					player.sendMessage( r + father.getName() + r + " is neutered! The breed attempt fails");
+					player.sendMessage( r + father.getName() + r + CustomLang.getConfig().getString("msg.breedFailAlert"));
 				}
 				else {
-					player.sendMessage( r + mother.getName() + r + " is neutered! The breed attempt fails");
+					player.sendMessage( r + mother.getName() + r + CustomLang.getConfig().getString("msg.breedFailAlert"));
 				}
 				
 				father.setLoveModeTicks(0);

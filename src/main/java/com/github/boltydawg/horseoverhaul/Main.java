@@ -51,6 +51,8 @@ public class Main extends JavaPlugin{
 		// setup config
 		CustomConfig.setup();
 		this.readConfig(CustomConfig.getConfig());
+		// setup lang
+		CustomLang.setup();
 		
 		// commands
 		this.getCommand("horseo").setExecutor(new CommandHorseo());
