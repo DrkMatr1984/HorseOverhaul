@@ -181,8 +181,13 @@ public class OwnershipListener implements Listener {
 								
 								if(Generation.ORIGINAL.equals(met.getGeneration())) {
 									
-									player.getInventory().setItemInMainHand(null);
-									claimHorse(abHorse, player, abHorse.getCustomName());
+									if(player.hasPermission("horseo.claimOwned")) {
+										player.getInventory().setItemInMainHand(null);
+										claimHorse(abHorse, player, abHorse.getCustomName());
+									}
+									else {
+										player.sendMessage(ChatColor.RED + "You don't have permission to claim other people's horses");
+									}
 
 								}
 								else {
@@ -199,6 +204,10 @@ public class OwnershipListener implements Listener {
 								event.setCancelled(true);
 								return;
 							}		
+						}
+						
+						if(player.hasPermission("horseo.interactAll")) {
+							return;
 						}
 						
 						abHorse.getWorld().playSound(abHorse.getLocation(), Sound.ENTITY_HORSE_ANGRY, 0.8F, 1.0F);
@@ -248,6 +257,11 @@ public class OwnershipListener implements Listener {
 							player.sendRawMessage(ChatColor.RED + "You must finish naming the current horse before claiming another!");
 							return;
 							
+						}
+						
+						if(!player.hasPermission("horseo.claimWild")) {
+							player.sendMessage(ChatColor.RED + "You do not have permission to claim wild horses");
+							return;
 						}
 						
 						player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);

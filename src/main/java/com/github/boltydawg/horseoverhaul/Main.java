@@ -2,6 +2,7 @@ package com.github.boltydawg.horseoverhaul;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -10,8 +11,10 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,7 +22,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.github.boltydawg.horseoverhaul.Listeners.BreedingListener;
 import com.github.boltydawg.horseoverhaul.Listeners.GearListener;
 import com.github.boltydawg.horseoverhaul.Listeners.NerfListener;
-import com.github.boltydawg.horseoverhaul.Listeners.DeathListener;
 import com.github.boltydawg.horseoverhaul.Listeners.OwnershipListener;
 import com.github.boltydawg.horseoverhaul.Listeners.StatsListener;
 import com.github.boltydawg.horseoverhaul.Listeners.WhistleListener;
@@ -41,12 +43,21 @@ public class Main extends JavaPlugin{
 	
 	public static DecimalFormat df = new DecimalFormat("0.00");
 	
-	public static JavaPlugin instance;
+	public static Main instance;
+	
+	private BreedingListener breeding;
+	private StatsListener stats;
+	private OwnershipListener ownership;
+	private NerfListener nerf;
+	private WhistleListener whistle;
 	
 	@Override
 	public void onEnable() {
 		
 		instance = this;
+		
+		//set constant listeners
+		this.getServer().getPluginManager().registerEvents(new GearListener(), this);
 		
 		// setup config
 		CustomConfig.setup();
@@ -69,48 +80,41 @@ public class Main extends JavaPlugin{
 	 * @param config
 	 */
 	public void readConfig(FileConfiguration config) {
-		if(config.getBoolean("autoGearEquip.enabled")) {
-
-			this.getServer().getPluginManager().registerEvents(new GearListener(), this);
-			
-		}
+		
 		if(config.getBoolean("betterBreeding.enabled")) {
+			//initialize 
+			this.breeding = new BreedingListener();
 			
-			this.getServer().getPluginManager().registerEvents(new BreedingListener(), this);
+			//register listener
+			this.getServer().getPluginManager().registerEvents(breeding, this);
 			
+			//set other fields
 			BreedingListener.betterBreeding = true;
-			
-			if(config.getBoolean("betterBreeding.foodEffects")) {
 				
-				BreedingListener.foodEffects = true;
-				
-			}
-			
-		}
-		if(config.getBoolean("checkStats.enabled")) {
-			
-			this.getServer().getPluginManager().registerEvents(new StatsListener(), this);
-			
-			StatsListener.checkStats = true;
-			
-			if(config.getBoolean("checkStats.requireTamed")) {
-				
-				StatsListener.untamed = true;
-				
-			}
-			else
-				StatsListener.untamed = false;
+			BreedingListener.foodEffects = config.getBoolean("betterBreeding.foodEffects");
 		}
 		
-		if(config.getBoolean("dropGear.enabled")) {
+		if(config.getBoolean("checkStats.enabled")) {
+			//initialize 
+			this.stats = new StatsListener();
 			
-			this.getServer().getPluginManager().registerEvents(new DeathListener(), this);
+			//register listener
+			this.getServer().getPluginManager().registerEvents(stats, this);
 			
+			//set other fields
+			StatsListener.checkStats = true;
+			
+			StatsListener.untamed = config.getBoolean("checkStats.requireTamed");
 		}
+		
 		if(config.getBoolean("ownership.enabled")) {
+			//initialize
+			this.ownership = new OwnershipListener();
 			
-			this.getServer().getPluginManager().registerEvents(new OwnershipListener(), this);
+			//register the listener
+			this.getServer().getPluginManager().registerEvents(ownership, this);
 			
+			//set other fields
 			OwnershipListener.ownership = true;
 			
 			OwnershipListener.blankDeed = new ItemStack(Material.PAPER);
@@ -122,7 +126,7 @@ public class Main extends JavaPlugin{
 			met.setLore(lore);
 			OwnershipListener.blankDeed.setItemMeta(met);
 			
-			if(config.getBoolean("ownership.craftingRecipes")) {
+			if(config.getBoolean("ownership.craftingRecipe")) {
 				
 				ShapelessRecipe recipe = new ShapelessRecipe(new NamespacedKey(this, "blankDeed"),OwnershipListener.blankDeed);
 				recipe.addIngredient(1, Material.WRITABLE_BOOK);
@@ -137,11 +141,16 @@ public class Main extends JavaPlugin{
 			OwnershipListener.coloredNames = config.getBoolean("ownership.coloredNames");
 				
 		}
+		
 		if(config.getBoolean("nerfWildSpawns.enabled")) {
+			//initialize
+			this.nerf = new NerfListener();
 			
-			this.getServer().getPluginManager().registerEvents(new NerfListener(), this);
+			//register the listener
+			this.getServer().getPluginManager().registerEvents(nerf, this);
 			
-			NerfListener.nerf = config.getDouble("nerfWildSpawns.factor", 1.5);
+			//set other fields
+			NerfListener.divisor = config.getDouble("nerfWildSpawns.divisor", 1.5);
 			
 			if(config.getBoolean("nerfWildSpawns.override")) {
 				
@@ -158,10 +167,15 @@ public class Main extends JavaPlugin{
 			else
 				NerfListener.override = false;
 		}
+		
 		if(config.getBoolean("whistles.enabled")) {
+			//initialize
+			this.whistle = new WhistleListener();
 			
-			this.getServer().getPluginManager().registerEvents(new WhistleListener(), this);
+			//register the listener
+			this.getServer().getPluginManager().registerEvents(whistle, this);
 			
+			//set other fields
 			WhistleListener.whistle = true;
 			
 			WhistleListener.blankWhistle = new ItemStack(Material.IRON_NUGGET);
@@ -181,10 +195,65 @@ public class Main extends JavaPlugin{
 				WhistleListener.craftWhistle = true;
 				
 			}
-			if ( config.getBoolean("whistles.teleport") ) {
+			else
+				WhistleListener.craftWhistle = false;
 				
-				WhistleListener.whistleTP = true;
-				
+			WhistleListener.whistleTP = config.getBoolean("whistles.teleport");
+		}
+	}
+	
+	public void removeListeners() {
+		// Unregister and unload the all listeners, for the case of usage of /horseo reload
+		if (this.breeding != null) {
+			
+			HandlerList.unregisterAll(this.breeding);
+			
+			this.breeding = null;
+			
+			BreedingListener.betterBreeding = false;
+		}
+		
+		if (this.stats != null) {
+			HandlerList.unregisterAll(stats);
+			
+			this.stats = null;
+			
+			StatsListener.checkStats = false;
+		}
+		
+		if (this.ownership != null) {
+			HandlerList.unregisterAll(ownership);
+			
+			this.ownership = null;
+			
+			OwnershipListener.ownership = true;
+			OwnershipListener.blankDeed = null;
+			OwnershipListener.craftDeed = false;
+			OwnershipListener.coloredNames = false;
+		}
+		
+		if (this.nerf != null) {
+			HandlerList.unregisterAll(nerf);
+			
+			this.nerf = null;
+		}
+		
+		if (this.whistle != null){
+			HandlerList.unregisterAll(whistle);
+			
+			this.whistle = null;
+			
+			WhistleListener.whistle = false;
+		}
+
+		Iterator<Recipe> it = this.getServer().recipeIterator();
+		int found = 0;
+		while(it.hasNext() && found < 2) {
+			ItemStack n = it.next().getResult();
+			if (n.equals(OwnershipListener.blankDeed) ||
+					n.equals(WhistleListener.blankWhistle) ) {
+				it.remove();
+				found++;
 			}
 		}
 	}

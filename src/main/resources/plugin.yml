@@ -1,10 +1,28 @@
 name: HorseOverhaul
 main: com.github.boltydawg.horseoverhaul.Main
-version: 1.3-beta.2
+version: 1.3-beta.3
 author: BoltyDawg
 description: Better horse breeding, ownership, and stat viewing
 api-version: 1.14
 commands:
   horseo:
     description: Learn about Horse Overhaul!
-    usage: "Usage: /horseo [breed, own, stats, whistle]"
+    usage: /horseo [breed, own, stats, whistle]
+permissions:
+   horseo.*:
+      description: Gives access to all basic HorseOverhaul functionality
+      children:
+         horseo.claimWild: true
+         horseo.claimOwned: true
+   horseo.claimWild:
+      description: Grants you permission to claim wild horses (requires ownership to be enabled in config)
+      default: true
+   horseo.claimOwned:
+      description: Grants you permission to claim other owned horses using their deeds (requires ownership to be enabled in config)
+      default: true
+   horseo.reload:
+      description: Allows an admin to refresh HorseOverhaul's configuration
+      default: op
+   horseo.interactAll:
+      description: Allows you to ride/interact with any horse regardless of ownership
+      default: false

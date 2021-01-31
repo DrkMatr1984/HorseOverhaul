@@ -22,24 +22,22 @@ public class CustomConfig {
 		file = fetchConfigFile(Main.instance);
 		customFile = YamlConfiguration.loadConfiguration(file);
 		
-		customFile.addDefault("autoGearEquip.enabled", true);
 		customFile.addDefault("betterBreeding.enabled", true);
 		customFile.addDefault("betterBreeding.foodEffects",true);
 		customFile.addDefault("checkStats.enabled", true);
 		customFile.addDefault("checkStats.requireTamed", true);
-		customFile.addDefault("dropGear.enabled", true);
 		customFile.addDefault("ownership.enabled", true);
 		customFile.addDefault("ownership.craftingRecipe", true);
 		customFile.addDefault("ownership.coloredNames", false);
 		customFile.addDefault("nerfWildSpawns.enabled", false);
-		customFile.addDefault("nerfWildSpawns.factor", 1.5);
+		customFile.addDefault("nerfWildSpawns.divisor", 1.5);
 		customFile.addDefault("nerfWildSpawns.override", false);
 		customFile.addDefault("whistles.enabled", true);
 		customFile.addDefault("whistles.craftingRecipe", true);
 		customFile.addDefault("whistles.teleport", false);
 		
 		customFile.options().copyDefaults(true);
-		customFile.options().header("HorseOverhaul Configuration\n\nSee https://www.spigotmc.org/resources/horse-overhaul.75448/ for more information about each option\n\n");
+		customFile.options().header("HorseOverhaul Configuration\n\nAnytime you change an option here be sure to run the command \"/horseo reload\"\n\nSee https://www.spigotmc.org/resources/horse-overhaul.75448/ for more information about each option\n\n");
 		
 		save();
 	}
@@ -69,6 +67,7 @@ public class CustomConfig {
 	 */
 	public static void reload() {
 		customFile = YamlConfiguration.loadConfiguration(file);
+		Main.instance.readConfig(customFile);
 	}
 	
 	/**

@@ -20,12 +20,10 @@ import net.md_5.bungee.api.ChatColor;
 public class CommandHorseo implements CommandExecutor {
 	/**
 	 * This method fires everytime someone uses the /horseo command.
-	 * Expects only 1 argument: what they'd like more information about
+	 * Expects only 1 argument: either what they'd like more information about, or an admin using "reload"
 	 */
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		
-		if(!(sender instanceof Player)) return false;
 		
 		//checks if the player didn't enter any arguments following /horseo
 		if(args == null || args.length != 1){
@@ -34,9 +32,28 @@ public class CommandHorseo implements CommandExecutor {
 		
 		//checks if the player entered a valid string after /horseo, and sends them the proper message
 		else {
+			String param = args[0];
+			
+			//check if sender is a player
+			if(!(sender instanceof Player)) {
+				//no need to check permissions
+				if (param.equalsIgnoreCase("reload")) {
+					sender.sendMessage("Reloading HorseOverhaul...");
+					
+					//unitialize any existing listeners
+					Main.instance.removeListeners();
+					
+					//reload the config and necessary listeners
+					CustomConfig.reload();
+					
+					sender.sendMessage("Done.");
+					return true;
+				}
+				return false;
+			}
 			
 			Player player = ((Player) sender);
-			String param = args[0];
+			
 			
 			if(param.equalsIgnoreCase("breed")) {
 				player.sendMessage(helpBreed());
@@ -50,8 +67,27 @@ public class CommandHorseo implements CommandExecutor {
 			else if(param.equalsIgnoreCase("whistle")) {
 				player.sendMessage(helpWhistle());
 			}
-			else if(param.equalsIgnoreCase("pizza"))
+			else if(param.equalsIgnoreCase("pizza")) {
 				player.sendMessage("Your gamemode has been updated to Creative Mode");
+			}
+			else if (param.equalsIgnoreCase("reload")) {
+				if (player.hasPermission("horseo.reload")) {
+					player.sendMessage("Reloading HorseOverhaul...");
+					
+					//unitialize any existing listeners
+					Main.instance.removeListeners();
+					
+					//reload the config and necessary listeners
+					CustomConfig.reload();
+					
+					player.sendMessage("Done.");
+					
+					return true;
+				}
+				else {
+					player.sendMessage(ChatColor.DARK_AQUA + "[Horse Overhaul]" + ChatColor.RESET + ChatColor.RED + "You do not have permission to use this command");
+				}
+			}
 			else {
 				return false;
 			}

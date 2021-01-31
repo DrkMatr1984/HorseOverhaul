@@ -12,7 +12,7 @@ import org.bukkit.event.world.ChunkLoadEvent;
 public class NerfListener implements Listener{
 	
 	
-	public static double nerf;
+	public static double divisor;
 	public static boolean override;
 	
 	
@@ -70,10 +70,10 @@ public class NerfListener implements Listener{
 			
 		}
 		
-		horse.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue( horse.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() / nerf );
-		horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue( horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue() / nerf );
+		horse.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue( horse.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() / divisor );
+		horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue( horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue() / divisor );
 		
-		horse.setJumpStrength( horse.getJumpStrength() / nerf );
+		horse.setJumpStrength( horse.getJumpStrength() / divisor );
 		
 	}
 }

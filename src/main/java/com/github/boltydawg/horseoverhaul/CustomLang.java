@@ -23,6 +23,7 @@ public class CustomLang {
 		customFile = YamlConfiguration.loadConfiguration(file);
 		
 		customFile.addDefault("msg.nameSteedPrompt", "What would you like to name your new steed?");
+		customFile.addDefault("msg.nameSteedPrompt2", "(type your answer in chat)");
 		customFile.addDefault("msg.nameTooLongWarning", "Name too long! Must be at most 16 characters");
 		customFile.addDefault("msg.breedFailAlert", " is neutered! The breed attempt fails");
 		customFile.addDefault("msg.breedFailAlert2", "Both parents are neutered! The breed attempt fails");
