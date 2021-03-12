@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.boltydawg.horseoverhaul.Listeners.BreedingListener;
+import com.github.boltydawg.horseoverhaul.Listeners.CaptureListener;
 import com.github.boltydawg.horseoverhaul.Listeners.GearListener;
 import com.github.boltydawg.horseoverhaul.Listeners.NerfListener;
 import com.github.boltydawg.horseoverhaul.Listeners.OwnershipListener;
@@ -60,6 +61,7 @@ public class Main extends JavaPlugin{
 		
 		//set constant listeners
 		this.getServer().getPluginManager().registerEvents(new GearListener(), this);
+		this.getServer().getPluginManager().registerEvents(new CaptureListener(), this);
 		
 		// setup config
 		this.config = new CustomConfig(this);

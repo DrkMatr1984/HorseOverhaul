@@ -148,40 +148,20 @@ public class StatHorse{
 	 */
 	
 	public String printStats(boolean border) {
-		String msg = "";
+		String name = getName();
+		String msg = "\n";
 		
-		if(roach.getCustomName()!=null) {
-			
-			String stripped = ChatColor.stripColor(roach.getCustomName());
-			
-			String line = ChatColor.GRAY.toString();
-			for(int i = 0; i < stripped.length() + 6; i++) {
-				line += "-";
-			}
-			line += "\n" + ChatColor.RESET;
-			
-			msg+= line;
-			
-			if( roach.getCustomName().equals(stripped) )
-				msg += ChatColor.DARK_AQUA;
-			
-			msg += (roach.getCustomName() + "'s Stats" + ChatColor.RESET + "\n");
-			
-			msg += line;
-				
+		String line = ChatColor.GRAY.toString();
+		for(int i = 0; i < ChatColor.stripColor(name).length() + 6; i++) {
+			line += "-";
 		}
+		line += "\n" + ChatColor.RESET;
 		
-		else if (roach instanceof Horse) {
-			String color = ((Horse)this.roach).getColor().name();
-			color = color.toCharArray()[0] + color.substring(1).toLowerCase();
-			msg += (ChatColor.DARK_AQUA.toString() + ChatColor.UNDERLINE + color + " Horse's Stats") + ChatColor.RESET + "\n \n";
-		}
+		msg += line;
 		
-		else {
-			String type = roach.getType().name();
-			type = type.toCharArray()[0] + type.substring(1).toLowerCase();
-			msg += (ChatColor.DARK_AQUA.toString() + ChatColor.UNDERLINE + type + "'s Stats") + ChatColor.RESET + "\n \n";
-		}
+		msg += (ChatColor.DARK_AQUA.toString() + ChatColor.UNDERLINE + name + "'s Stats") + ChatColor.RESET + "\n \n";
+		
+		msg += line;
 			
 		
 		msg += ChatColor.RED + "Health:\n" + printHearts(getHealth()) + " " + ChatColor.RED + Main.df.format(getHealth()) + "h\n";
@@ -195,6 +175,24 @@ public class StatHorse{
 		}
 		else
 			return msg + ChatColor.YELLOW + "Can Breed:\n" + (roach.getScoreboardTags().contains("ho.isNeutered") ? ChatColor.LIGHT_PURPLE + "False" : ChatColor.LIGHT_PURPLE + "True") + "\n";
+	}
+	
+	public String getName() {
+		if(roach.getCustomName()!=null) {
+			
+			return roach.getCustomName();	
+			
+		} else if (roach instanceof Horse) {
+			
+			String color = ((Horse)this.roach).getColor().name();
+			return color.toCharArray()[0] + color.substring(1).toLowerCase() + " Horse";
+			
+		} else {
+			
+			String type = roach.getType().name();
+			return type.toCharArray()[0] + type.substring(1).toLowerCase();
+			
+		}
 	}
 		
 	private String printJump(double jh) {
