@@ -2,6 +2,8 @@ package com.github.boltydawg.horseoverhaul.Listeners;
 
 import java.util.ArrayList;
 
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -9,7 +11,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
-import org.bukkit.entity.Horse.Color;
 import org.bukkit.entity.Horse.Style;
 import org.bukkit.entity.Llama;
 import org.bukkit.entity.Player;
@@ -18,7 +19,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -139,7 +142,7 @@ public class CaptureListener implements Listener{
 		
 		if (abHorse instanceof Horse) {
 			Horse horse = (Horse)abHorse;
-			horse.setColor(Color.valueOf(data[9]));
+			horse.setColor(Horse.Color.valueOf(data[9]));
 			horse.setStyle(Style.valueOf(data[10]));
 		}
 		else if (abHorse instanceof Llama) {
@@ -151,7 +154,7 @@ public class CaptureListener implements Listener{
 
 	private  static ItemMeta captureHorse(AbstractHorse abHorse, Player player, ItemStack item) {
 		
-		ItemMeta met = item.getItemMeta();
+		FireworkEffectMeta met = (FireworkEffectMeta)(item.getItemMeta());
 		
 		met.setDisplayName("Filled Capture Orb");
 		
@@ -162,6 +165,13 @@ public class CaptureListener implements Listener{
 		met.getPersistentDataContainer().set(new NamespacedKey(Main.instance, "ho.capture-data"), PersistentDataType.STRING, data);
 		
 		abHorse.remove();
+		
+		FireworkEffect.Builder builder = FireworkEffect.builder();
+		builder.withColor(Color.YELLOW, Color.GREEN);
+		met.setEffect(builder.build());
+		
+		//TODO find an itemflag that works, this does not
+		met.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		
 		//TODO remove this
 		player.sendMessage(data);
