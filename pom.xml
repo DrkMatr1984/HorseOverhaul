@@ -4,10 +4,10 @@
 
   <groupId>com.github.boltydawg</groupId>
   <artifactId>horseoverhaul</artifactId>
-  <version>1.3-beta.3</version>
+  <version>v1.3.0</version>
   <packaging>jar</packaging>
 
-  <name>horseoverhaul</name>
+  <name>HorseOverhaul</name>
   <url>http://maven.apache.org</url>
 
   <properties>

@@ -5,23 +5,25 @@ import java.io.IOException;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class CustomConfig {
 	
-	private static File file;
-	private static FileConfiguration customFile;
+	private FileConfiguration customFile;
+	private File file;
 	
 	private static final String NAME = "settings.yml";
 	
+	private Main plugin;
 	
-	/**
-	 * Set up our {@link FileConfiguration} and locally stored {@link File}
-	 */
-	public static void setup() {
-		file = fetchConfigFile(Main.instance);
-		customFile = YamlConfiguration.loadConfiguration(file);
+	public CustomConfig(Main plugin) {
+		this.plugin = plugin;
+		this.file = fetchConfigFile();
+		this.customFile = YamlConfiguration.loadConfiguration(file);
 		
+		addDefaults();
+	}
+	
+	private void addDefaults() {
 		customFile.addDefault("betterBreeding.enabled", true);
 		customFile.addDefault("betterBreeding.foodEffects",true);
 		customFile.addDefault("checkStats.enabled", true);
@@ -41,33 +43,39 @@ public class CustomConfig {
 		
 		save();
 	}
+		
 	
 	/**
 	 * getter for our custom {@link FileConfiguration}
 	 * @return FileConfiguration
 	 */
-	public static FileConfiguration getConfig() {
+	public FileConfiguration getConfig() {
 		return customFile;
 	}
 	
 	/**
 	 * save the current configuration to settings.yml
 	 */
-	public static void save() {
+	public void save() {
 		try {
-			customFile.save(file);
+			customFile.save(fetchConfigFile());
 		} 
 		catch(IOException e) {
-			Main.instance.getLogger().warning("Error saving config, please report this to BoltyDawg:\n" + e.toString());
+			this.plugin.getLogger().warning("Error saving config, please report this to BoltyDawg:\n" + e.toString());
 		}
 	}
 	
 	/**
 	 * reloads the configuration
 	 */
-	public static void reload() {
-		customFile = YamlConfiguration.loadConfiguration(file);
-		Main.instance.readConfig(customFile);
+	public void reload() {
+		if(!this.file.exists()) {
+			file = fetchConfigFile();
+			customFile = YamlConfiguration.loadConfiguration(file);
+			addDefaults();
+		}
+		else
+			customFile = YamlConfiguration.loadConfiguration(file);
 	}
 	
 	/**
@@ -76,16 +84,16 @@ public class CustomConfig {
 	 * @param plugin
 	 * @return File
 	 */
-	private static File fetchConfigFile(JavaPlugin plugin) {
-		File file = new File(plugin.getDataFolder(), NAME);
+	private  File fetchConfigFile() {
+		File file = new File(this.plugin.getDataFolder(), NAME);
 		
 		if(!file.exists()) {
 			try {
 				file.createNewFile();
-				plugin.getLogger().info("creating " + NAME);
+				this.plugin.getLogger().info("creating " + NAME);
 			} 
 			catch (IOException e) {
-				Main.instance.getLogger().warning("Error creating config, please report this to BoltyDawg:\n" + e.toString());
+				this.plugin.getLogger().warning("Error creating config, please report this to BoltyDawg:\n" + e.toString());
 			}	
 		}
 		

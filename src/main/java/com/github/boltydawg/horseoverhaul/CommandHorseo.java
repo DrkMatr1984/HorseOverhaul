@@ -43,8 +43,11 @@ public class CommandHorseo implements CommandExecutor {
 					//unitialize any existing listeners
 					Main.instance.removeListeners();
 					
-					//reload the config and necessary listeners
-					CustomConfig.reload();
+					//reload the config file
+					Main.instance.getCustomConfig().reload();
+					
+					//re-read the the config and boot up necessary listeners
+					Main.instance.readConfig();
 					
 					sender.sendMessage("Done.");
 					return true;
@@ -77,8 +80,11 @@ public class CommandHorseo implements CommandExecutor {
 					//unitialize any existing listeners
 					Main.instance.removeListeners();
 					
-					//reload the config and necessary listeners
-					CustomConfig.reload();
+					//reload the config file
+					Main.instance.getCustomConfig().reload();
+					
+					//re-read the the config and boot up necessary listeners
+					Main.instance.readConfig();
 					
 					player.sendMessage("Done.");
 					
