@@ -34,11 +34,35 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class CaptureListener implements Listener{
 	
-	ItemStack captureEgg;
+	//fields
+	private ItemStack captureBall;
 	
-	//need to think of a name for the capturing tool. But should make its recipe expensive and make it a tool with "durability" (uses stored in lore)
-	//DROP its inventory contents upon capture. Not storing that
+	
+	//constructor
+	public CaptureListener() {
+		
+		super();
+		
+		//TODO get the captureBall from recipes.yml
+		this.captureBall = new ItemStack(Material.FIREWORK_STAR);
+		ItemMeta met = captureBall.getItemMeta();
+		met.setDisplayName("Capture Ball (empty)");
+		ArrayList<String> lore = new ArrayList<String>();
+		//TODO pull this from config. 0 = don't put this here
+		lore.add(ChatColor.RED + "Uses: 10");
+		met.setLore(lore);
+		
+		captureBall.setItemMeta(met);
+	}
+	
+	
+	//get methods
+	public ItemStack getCaptureBall() {
+		return this.captureBall;
+	}
+	
 
+	//TODO finish all of the conditions
 	@EventHandler
 	public void clickEntity(PlayerInteractEntityEvent event) {
 		
@@ -47,8 +71,7 @@ public class CaptureListener implements Listener{
 			Player player = event.getPlayer();
 			ItemStack item = event.getHand().name().equalsIgnoreCase("HAND") ? player.getInventory().getItemInMainHand() : player.getInventory().getItemInOffHand();
 			
-			//TODO check if it's an actual capture orb
-			if(item.getType().equals(Material.FIREWORK_STAR) ) { 
+			if(item != null && isCaptureBall(item) ) { 
 				
 				AbstractHorse abHorse = (AbstractHorse)event.getRightClicked();
 				
@@ -70,6 +93,15 @@ public class CaptureListener implements Listener{
 		}
 	}
 	
+	//TODO finish this
+	private boolean isCaptureBall(ItemStack item) {
+		ItemMeta met = item.getItemMeta();
+		
+		if(met == null) return false;
+		
+		return item.getType().equals(captureBall.getType()); 
+	}
+
 	@EventHandler
 	public void spawnInHorseFromCapture(PlayerInteractEvent event) {
 		
