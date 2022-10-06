@@ -47,6 +47,7 @@ public class Main extends JavaPlugin{
 	
 	public CustomConfig config;
 	
+	private GearListener gear;
 	private BreedingListener breeding;
 	private StatsListener stats;
 	private OwnershipListener ownership;
@@ -59,7 +60,7 @@ public class Main extends JavaPlugin{
 		instance = this;
 		
 		//set constant listeners
-		this.getServer().getPluginManager().registerEvents(new GearListener(), this);
+		
 		
 		// setup config
 		this.config = new CustomConfig(this);
@@ -85,6 +86,19 @@ public class Main extends JavaPlugin{
 	 */
 	public void readConfig() {
 		FileConfiguration c = config.getConfig();
+
+		if(c.getBoolean("autoGear.enabled")) {
+			//initialize 
+			this.gear = new GearListener();
+			
+			//register listener
+			this.getServer().getPluginManager().registerEvents(gear, this);
+			
+			//set other fields
+			GearListener.saddles = c.getBoolean("autoGear.saddles");
+				
+			GearListener.horseArmor = c.getBoolean("autoGear.horseArmor");
+		}
 		
 		if(c.getBoolean("betterBreeding.enabled")) {
 			//initialize 

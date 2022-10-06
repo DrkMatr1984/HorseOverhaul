@@ -24,6 +24,9 @@ public class CustomConfig {
 	}
 	
 	private void addDefaults() {
+		customFile.addDefault("autoGear.enabled", true);
+		customFile.addDefault("autoGear.saddles", true);
+		customFile.addDefault("autoGear.horseArmor", true);
 		customFile.addDefault("betterBreeding.enabled", true);
 		customFile.addDefault("betterBreeding.foodEffects",true);
 		customFile.addDefault("checkStats.enabled", true);

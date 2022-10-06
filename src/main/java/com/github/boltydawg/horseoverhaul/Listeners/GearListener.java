@@ -10,6 +10,9 @@ import org.bukkit.inventory.ItemStack;
 
 public class GearListener implements Listener {
 	
+	public static boolean saddles;
+	public static boolean horseArmor;
+	
 	@EventHandler
 	public void clickEntity(PlayerInteractEntityEvent event) {
 		
@@ -22,26 +25,26 @@ public class GearListener implements Listener {
 				if(!event.getPlayer().isSneaking()) {
 					
 					ItemStack hand = event.getPlayer().getInventory().getItemInMainHand();
-					
-					if( hand.getType().equals(Material.SADDLE) && abHorse.getInventory().getSaddle() == null ) {
+					if(saddles)
+					    if( hand.getType().equals(Material.SADDLE) && abHorse.getInventory().getSaddle() == null ) {
 						
-						abHorse.getInventory().setSaddle(hand);
-						event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-						event.setCancelled(true);
+						    abHorse.getInventory().setSaddle(hand);
+						    event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+						    event.setCancelled(true);
 						
-					}
-					
-					else if(hand.getType().name().contains("HORSE_ARMOR") && event.getRightClicked() instanceof Horse) {
-						Horse horse = (Horse)event.getRightClicked();
+					    }
+					if(horseArmor)
+					    if(hand.getType().name().contains("HORSE_ARMOR") && event.getRightClicked() instanceof Horse) {
+						    Horse horse = (Horse)event.getRightClicked();
 						
-						if(horse.getInventory().getArmor() == null) {
-							horse.getInventory().setArmor(hand);
-							event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-							event.setCancelled(true);
-						}
-					}
-				}
+						    if(horse.getInventory().getArmor() == null) {
+							    horse.getInventory().setArmor(hand);
+							    event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+							    event.setCancelled(true);
+						    }
+					    }
+		        }
 			}
-		}
+		}//add carpets for llama?
 	}
 }
