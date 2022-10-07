@@ -28,7 +28,7 @@ public class NamePrompt extends StringPrompt {
 		TextComponent tc = new TextComponent("What would you like to name your new steed?");
 		tc.setColor(ChatColor.BLUE);
 		
-		if(OwnershipListener.coloredNames) {
+		if(HorseOverhaul.instance.config.coloredNames) {
 			TextComponent tc1 = new TextComponent("\nClick ");
 			tc1.setColor(ChatColor.BLUE);
 			
@@ -57,7 +57,7 @@ public class NamePrompt extends StringPrompt {
 		
 		String name = input;
 		
-		if(OwnershipListener.coloredNames) {
+		if(HorseOverhaul.instance.config.coloredNames) {
 			
 			while(name.contains("&")) {
 				

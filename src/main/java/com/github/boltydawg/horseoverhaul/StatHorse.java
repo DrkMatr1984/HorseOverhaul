@@ -5,8 +5,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Horse;
 
-import com.github.boltydawg.horseoverhaul.Listeners.BreedingListener;
-
 
 /**
  * @see https://minecraft.gamepedia.com/Attribute
@@ -33,7 +31,7 @@ public class StatHorse{
 	
 	public StatHorse(AbstractHorse horse, byte f) {
 		roach = (AbstractHorse)horse;
-		food = BreedingListener.foodEffects ? f : 0;
+		food = HorseOverhaul.instance.config.foodEffects ? f : 0;
 	}
 	
 	
@@ -184,9 +182,9 @@ public class StatHorse{
 		}
 			
 		
-		msg += ChatColor.RED + "Health:\n" + printHearts(getHealth()) + " " + ChatColor.RED + Main.df.format(getHealth()) + "h\n";
-		msg += ChatColor.GREEN + "Speed:\n" + printSpeed(getSpeed()) + " " + ChatColor.GREEN + Main.df.format(getSpeed()) + "m/s\n";
-		msg += ChatColor.BLUE + "Jump Height:\n" + printJump(getJumpHeight()) + " " + ChatColor.BLUE + Main.df.format(getJumpHeight()) + "m\n";
+		msg += ChatColor.RED + "Health:\n" + printHearts(getHealth()) + " " + ChatColor.RED + HorseOverhaul.df.format(getHealth()) + "h\n";
+		msg += ChatColor.GREEN + "Speed:\n" + printSpeed(getSpeed()) + " " + ChatColor.GREEN + HorseOverhaul.df.format(getSpeed()) + "m/s\n";
+		msg += ChatColor.BLUE + "Jump Height:\n" + printJump(getJumpHeight()) + " " + ChatColor.BLUE + HorseOverhaul.df.format(getJumpHeight()) + "m\n";
 		
 		
 		if(border) {

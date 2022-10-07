@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.HandlerList;
@@ -20,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.boltydawg.horseoverhaul.Listeners.BreedingListener;
+import com.github.boltydawg.horseoverhaul.Listeners.CombatListener;
 import com.github.boltydawg.horseoverhaul.Listeners.GearListener;
 import com.github.boltydawg.horseoverhaul.Listeners.NerfListener;
 import com.github.boltydawg.horseoverhaul.Listeners.OwnershipListener;
@@ -39,13 +39,16 @@ import com.github.boltydawg.horseoverhaul.Listeners.WhistleListener;
 //TODO add way to "unlock" a horse?
 
 
-public class Main extends JavaPlugin{
+public class HorseOverhaul extends JavaPlugin{
 	
 	public static DecimalFormat df = new DecimalFormat("0.00");
 	
-	public static Main instance;
+	public static HorseOverhaul instance;
 	
 	public CustomConfig config;
+	
+	private ShapelessRecipe whistleRecipe;
+	private ShapelessRecipe deedRecipe;
 	
 	private GearListener gear;
 	private BreedingListener breeding;
@@ -53,18 +56,19 @@ public class Main extends JavaPlugin{
 	private OwnershipListener ownership;
 	private NerfListener nerf;
 	private WhistleListener whistle;
+	private CombatListener combat;
 	
 	@Override
 	public void onEnable() {
 		
 		instance = this;
 		
-		//set constant listeners
-		
-		
 		// setup config
 		this.config = new CustomConfig(this);
-		this.readConfig();
+		this.config.loadConfig();
+		
+		// load listeners
+		this.loadListeners();
 		
 		// commands
 		this.getCommand("horseo").setExecutor(new CommandHorseo());
@@ -74,67 +78,60 @@ public class Main extends JavaPlugin{
 	public void onDisable() {
 		this.getLogger().info("Saving config");
 		config.save();
+		removeListeners();
+		removeRecipes();
 	}
 	
 	public CustomConfig getCustomConfig() {
 		return this.config;
 	}
 	
+	public void removeRecipes() {
+		if(whistleRecipe!=null)
+		    if(this.getServer().getRecipe(whistleRecipe.getKey())!=null)
+			    this.getServer().removeRecipe(whistleRecipe.getKey());
+		if(deedRecipe!=null)
+		    if(this.getServer().getRecipe(deedRecipe.getKey())!=null)
+			    this.getServer().removeRecipe(deedRecipe.getKey());
+	}
+	
 	/**
-	 * read and set the config's values
-	 * @param config
+	 * load the required listeners based on config options
 	 */
-	public void readConfig() {
-		FileConfiguration c = config.getConfig();
-
-		if(c.getBoolean("autoGear.enabled")) {
+	public void loadListeners() {
+		
+		if(config.gearEnabled) {
 			//initialize 
 			this.gear = new GearListener();
 			
 			//register listener
 			this.getServer().getPluginManager().registerEvents(gear, this);
-			
-			//set other fields
-			GearListener.saddles = c.getBoolean("autoGear.saddles");
-				
-			GearListener.horseArmor = c.getBoolean("autoGear.horseArmor");
 		}
 		
-		if(c.getBoolean("betterBreeding.enabled")) {
+		if(config.betterBreedingEnabled) {
 			//initialize 
 			this.breeding = new BreedingListener();
 			
 			//register listener
 			this.getServer().getPluginManager().registerEvents(breeding, this);
 			
-			//set other fields
-			BreedingListener.betterBreeding = true;
-				
-			BreedingListener.foodEffects = c.getBoolean("betterBreeding.foodEffects");
 		}
 		
-		if(c.getBoolean("checkStats.enabled")) {
+		if(config.checkStatsEnabled) {
 			//initialize 
 			this.stats = new StatsListener();
 			
 			//register listener
 			this.getServer().getPluginManager().registerEvents(stats, this);
 			
-			//set other fields
-			StatsListener.checkStats = true;
-			
-			StatsListener.untamed = c.getBoolean("checkStats.requireTamed");
 		}
 		
-		if(c.getBoolean("ownership.enabled")) {
+		if(config.ownershipEnabled) {
 			//initialize
 			this.ownership = new OwnershipListener();
 			
 			//register the listener
 			this.getServer().getPluginManager().registerEvents(ownership, this);
-			
-			//set other fields
-			OwnershipListener.ownership = true;
 			
 			OwnershipListener.blankDeed = new ItemStack(Material.PAPER);
 			ItemMeta met = OwnershipListener.blankDeed.getItemMeta();
@@ -145,35 +142,26 @@ public class Main extends JavaPlugin{
 			met.setLore(lore);
 			OwnershipListener.blankDeed.setItemMeta(met);
 			
-			if(c.getBoolean("ownership.craftingRecipe")) {
+			if(config.deedCraftingRecipe) {
 				
-				ShapelessRecipe recipe = new ShapelessRecipe(new NamespacedKey(this, "blankDeed"),OwnershipListener.blankDeed);
-				recipe.addIngredient(1, Material.WRITABLE_BOOK);
-				recipe.addIngredient(1, Material.GOLDEN_CARROT);
-				
-				this.getServer().addRecipe(recipe);
-				
-				OwnershipListener.craftDeed = true;
+				deedRecipe = new ShapelessRecipe(new NamespacedKey(this, "blankDeed"),OwnershipListener.blankDeed);
+				deedRecipe.addIngredient(1, Material.WRITABLE_BOOK);
+				deedRecipe.addIngredient(1, Material.GOLDEN_CARROT);
+				if(this.getServer().getRecipe(deedRecipe.getKey()) == null)
+					this.getServer().addRecipe(deedRecipe);
 				
 			}
-			
-			OwnershipListener.coloredNames = c.getBoolean("ownership.coloredNames");
 				
 		}
 		
-		if(c.getBoolean("nerfWildSpawns.enabled")) {
+		if(config.nerfWildSpawns) {
 			//initialize
 			this.nerf = new NerfListener();
 			
 			//register the listener
 			this.getServer().getPluginManager().registerEvents(nerf, this);
 			
-			//set other fields
-			NerfListener.divisor = c.getDouble("nerfWildSpawns.divisor", 1.5);
-			
-			if(c.getBoolean("nerfWildSpawns.override")) {
-				
-				NerfListener.override = true;
+			if(config.override) {
 				
 				for (World w: instance.getServer().getWorlds()){
 					for(LivingEntity e: w.getLivingEntities()) {
@@ -183,19 +171,15 @@ public class Main extends JavaPlugin{
 					}
 				}
 			}
-			else
-				NerfListener.override = false;
+			
 		}
 		
-		if(c.getBoolean("whistles.enabled")) {
+		if(config.whistlesEnabled) {
 			//initialize
 			this.whistle = new WhistleListener();
 			
 			//register the listener
 			this.getServer().getPluginManager().registerEvents(whistle, this);
-			
-			//set other fields
-			WhistleListener.whistle = true;
 			
 			WhistleListener.blankWhistle = new ItemStack(Material.IRON_NUGGET);
 			ItemMeta met = WhistleListener.blankWhistle.getItemMeta();
@@ -203,33 +187,41 @@ public class Main extends JavaPlugin{
 			met.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
 			WhistleListener.blankWhistle.setItemMeta(met);
 			
-			if(c.getBoolean("whistles.craftingRecipe")) {
-				
-				ShapelessRecipe recipe = new ShapelessRecipe(new NamespacedKey(this, "whistle"), WhistleListener.blankWhistle);
-				recipe.addIngredient(1, Material.IRON_INGOT);
-				recipe.addIngredient(1, Material.GOLDEN_CARROT);
-				
-				this.getServer().addRecipe(recipe);
-				
-				WhistleListener.craftWhistle = true;
-				
+			if(config.whistleCraftingRecipe) {				
+				whistleRecipe = new ShapelessRecipe(new NamespacedKey(this, "whistle"), WhistleListener.blankWhistle);
+				whistleRecipe.addIngredient(1, Material.IRON_INGOT);
+				whistleRecipe.addIngredient(1, Material.GOLDEN_CARROT);
+				if(this.getServer().getRecipe(whistleRecipe.getKey()) == null)
+				    this.getServer().addRecipe(whistleRecipe);
 			}
-			else
-				WhistleListener.craftWhistle = false;
-				
-			WhistleListener.whistleTP = c.getBoolean("whistles.teleport");
+		}
+		
+		if(config.horseCombat) {
+			//initialize 
+			this.combat = new CombatListener();
+			
+			//register listener
+			this.getServer().getPluginManager().registerEvents(combat, this);
+			
 		}
 	}
 	
 	public void removeListeners() {
 		// Unregister and unload the all listeners, for the case of usage of /horseo reload
+		if (this.gear != null){
+			HandlerList.unregisterAll(gear);
+			
+			this.gear = null;
+			
+			config.gearEnabled = false;
+		}
 		if (this.breeding != null) {
 			
 			HandlerList.unregisterAll(this.breeding);
 			
 			this.breeding = null;
 			
-			BreedingListener.betterBreeding = false;
+			config.betterBreedingEnabled = false;
 		}
 		
 		if (this.stats != null) {
@@ -237,7 +229,7 @@ public class Main extends JavaPlugin{
 			
 			this.stats = null;
 			
-			StatsListener.checkStats = false;
+			config.checkStatsEnabled = false;
 		}
 		
 		if (this.ownership != null) {
@@ -245,9 +237,9 @@ public class Main extends JavaPlugin{
 			
 			this.ownership = null;
 			
-			OwnershipListener.ownership = true;
-			OwnershipListener.craftDeed = false;
-			OwnershipListener.coloredNames = false;
+			config.ownershipEnabled = true;
+			config.deedCraftingRecipe = false;
+			config.coloredNames = false;
 		}
 		
 		if (this.nerf != null) {
@@ -261,7 +253,15 @@ public class Main extends JavaPlugin{
 			
 			this.whistle = null;
 			
-			WhistleListener.whistle = false;
+			config.whistlesEnabled = false;
+		}
+		
+		if (this.combat != null){
+			HandlerList.unregisterAll(combat);
+			
+			this.combat = null;
+			
+			config.horseCombat = false;
 		}
 
 		Iterator<Recipe> it = this.getServer().recipeIterator();

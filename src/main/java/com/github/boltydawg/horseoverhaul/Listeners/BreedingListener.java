@@ -8,11 +8,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityBreedEvent;
 
+import com.github.boltydawg.horseoverhaul.HorseOverhaul;
 import com.github.boltydawg.horseoverhaul.StatHorse;
 
 public class BreedingListener implements Listener{
-	
-	public static boolean betterBreeding, foodEffects;
 
 	@EventHandler
 	public void onBreed(EntityBreedEvent event) {
@@ -51,23 +50,18 @@ public class BreedingListener implements Listener{
 			}
 			
 			// set the stats based off what what breeding food was used
-			StatHorse foal;
-			if(event.getBredWith().getType().equals(Material.ENCHANTED_GOLDEN_APPLE)) {
-				
-				foal = new StatHorse((AbstractHorse)event.getEntity(), (byte)2);
-				event.getEntity().getScoreboardTags().add("ho.isNeutered");
-				
+			StatHorse foal = new StatHorse((AbstractHorse)event.getEntity());;
+			if(HorseOverhaul.instance.config.foodEffects) {
+				if(event.getBredWith().getType().equals(Material.ENCHANTED_GOLDEN_APPLE)) {
+					foal = new StatHorse((AbstractHorse)event.getEntity(), (byte)2);
+					event.getEntity().getScoreboardTags().add("ho.isNeutered");
+				}
+				if(event.getBredWith().getType().equals(Material.GOLDEN_APPLE))
+					foal = new StatHorse((AbstractHorse)event.getEntity(), (byte)1);
 			}
 
-			else if(event.getBredWith().getType().equals(Material.GOLDEN_APPLE))
-				foal = new StatHorse((AbstractHorse)event.getEntity(), (byte)1);
-			else
-				foal = new StatHorse((AbstractHorse)event.getEntity());
-			
-			
 			foal.calculateBirth((AbstractHorse)event.getMother(),(AbstractHorse)event.getFather());
 			foal.roach.setTamed(true);
-			
 		}
 	}
 }

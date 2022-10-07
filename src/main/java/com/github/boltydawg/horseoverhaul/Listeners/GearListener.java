@@ -8,10 +8,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.github.boltydawg.horseoverhaul.HorseOverhaul;
+
 public class GearListener implements Listener {
-	
-	public static boolean saddles;
-	public static boolean horseArmor;
 	
 	@EventHandler
 	public void clickEntity(PlayerInteractEntityEvent event) {
@@ -25,7 +24,7 @@ public class GearListener implements Listener {
 				if(!event.getPlayer().isSneaking()) {
 					
 					ItemStack hand = event.getPlayer().getInventory().getItemInMainHand();
-					if(saddles)
+					if(HorseOverhaul.instance.config.gearSaddles)
 					    if( hand.getType().equals(Material.SADDLE) && abHorse.getInventory().getSaddle() == null ) {
 						
 						    abHorse.getInventory().setSaddle(hand);
@@ -33,7 +32,7 @@ public class GearListener implements Listener {
 						    event.setCancelled(true);
 						
 					    }
-					if(horseArmor)
+					if(HorseOverhaul.instance.config.gearArmor)
 					    if(hand.getType().name().contains("HORSE_ARMOR") && event.getRightClicked() instanceof Horse) {
 						    Horse horse = (Horse)event.getRightClicked();
 						

@@ -1,8 +1,8 @@
 name: HorseOverhaul
-main: com.github.boltydawg.horseoverhaul.Main
+main: com.github.boltydawg.horseoverhaul.HorseOverhaul
 version: 1.3.1
-author: BoltyDawg
-description: Better horse breeding, ownership, and stat viewing
+authors: [BoltyDawg, DrkMatr1984]
+description: Better horse breeding, ownership, stat viewing, and more
 api-version: 1.14
 commands:
   horseo:
@@ -14,11 +14,19 @@ permissions:
       children:
          horseo.claimWild: true
          horseo.claimOwned: true
+         horseo.horsecombat.melee: true
+         horseo.horsecombat.ranged: true
    horseo.claimWild:
       description: Grants you permission to claim wild horses (requires ownership to be enabled in config)
       default: true
    horseo.claimOwned:
       description: Grants you permission to claim other owned horses using their deeds (requires ownership to be enabled in config)
+      default: true
+   horseo.horsecombat.melee:
+      description: Grants you permission to deal extra damage with melee weapons while mounted on Horses
+      default: true
+   horseo.horsecombat.ranged:
+      description: Grants you permission to deal extra damage with projectiles while mounted on Horses
       default: true
    horseo.reload:
       description: Allows an admin to refresh HorseOverhaul's configuration

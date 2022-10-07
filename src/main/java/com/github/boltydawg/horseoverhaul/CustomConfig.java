@@ -11,42 +11,84 @@ public class CustomConfig {
 	private FileConfiguration customFile;
 	private File file;
 	
-	private static final String NAME = "settings.yml";
+	private HorseOverhaul plugin;
+	public boolean gearEnabled;
+	public boolean gearSaddles;
+	public boolean gearArmor;
+	public boolean betterBreedingEnabled;
+	public boolean foodEffects;
+	public boolean checkStatsEnabled;
+	public boolean requireTamed;
+	public boolean ownershipEnabled;
+	public boolean deedCraftingRecipe;
+	public boolean coloredNames;
+	public boolean nerfWildSpawns;
+	public double nerfDivisor;
+	public boolean override;
+	public boolean whistlesEnabled;
+	public boolean whistleCraftingRecipe;
+	public boolean whistleTeleport;
+	public boolean horseCombat;
+	public boolean horseMeleeCombat;
+	public double stationaryMeleeDamageMultiplier;
+	public double speedMeleeDamageMultiplier;
+	public boolean horseRangedCombat;
+	public boolean onlyArrows;
+	public double stationaryRangedDamageMultiplier;
+	public double speedRangedDamageMultiplier;
+	public String notifyMessage;
+	public boolean debug;
 	
-	private Main plugin;
 	
-	public CustomConfig(Main plugin) {
+	public CustomConfig(HorseOverhaul plugin) {
 		this.plugin = plugin;
+		plugin.saveDefaultConfig();
 		this.file = fetchConfigFile();
 		this.customFile = YamlConfiguration.loadConfiguration(file);
-		
-		addDefaults();
 	}
 	
-	private void addDefaults() {
-		customFile.addDefault("autoGear.enabled", true);
-		customFile.addDefault("autoGear.saddles", true);
-		customFile.addDefault("autoGear.horseArmor", true);
-		customFile.addDefault("betterBreeding.enabled", true);
-		customFile.addDefault("betterBreeding.foodEffects",true);
-		customFile.addDefault("checkStats.enabled", true);
-		customFile.addDefault("checkStats.requireTamed", true);
-		customFile.addDefault("ownership.enabled", true);
-		customFile.addDefault("ownership.craftingRecipe", true);
-		customFile.addDefault("ownership.coloredNames", false);
-		customFile.addDefault("nerfWildSpawns.enabled", false);
-		customFile.addDefault("nerfWildSpawns.divisor", 1.5);
-		customFile.addDefault("nerfWildSpawns.override", false);
-		customFile.addDefault("whistles.enabled", true);
-		customFile.addDefault("whistles.craftingRecipe", true);
-		customFile.addDefault("whistles.teleport", false);
+	public void loadConfig() {
+		//auto gears equip
+		gearEnabled = customFile.getBoolean("autoGear.enabled");
+		gearSaddles = customFile.getBoolean("autoGear.saddles");
+		gearArmor = customFile.getBoolean("autoGear.horseArmor");
 		
-		customFile.options().copyDefaults(true);
-		customFile.options().header("HorseOverhaul Configuration\n\nAnytime you change an option here be sure to run the command \"/horseo reload\"\n\nSee https://www.spigotmc.org/resources/horse-overhaul.75448/ for more information about each option\n\n");
+		//better breeding
+		betterBreedingEnabled = customFile.getBoolean("betterBreeding.enabled");
+		foodEffects = customFile.getBoolean("betterBreeding.foodEffects");
 		
-		save();
+		//check stats
+		checkStatsEnabled = customFile.getBoolean("checkStats.enabled");
+		requireTamed = customFile.getBoolean("checkStats.requireTamed");
+		
+		//ownership
+		ownershipEnabled = customFile.getBoolean("ownership.enabled");
+		deedCraftingRecipe = customFile.getBoolean("ownership.craftingRecipe");
+		coloredNames = customFile.getBoolean("ownership.coloredNames");
+		
+		//nerf wild spawns
+		nerfWildSpawns = customFile.getBoolean("nerfWildSpawns.enabled");
+		nerfDivisor = customFile.getDouble("nerfWildSpawns.divisor");
+		override = customFile.getBoolean("nerfWildSpawns.override");
+		
+		//whistles
+		whistlesEnabled = customFile.getBoolean("whistles.enabled");
+		whistleCraftingRecipe = customFile.getBoolean("whistles.craftingRecipe");
+		whistleTeleport = customFile.getBoolean("whistles.teleport");
+		
+		//horse combat
+		horseCombat = customFile.getBoolean("horseCombat.horseCombat");
+		horseMeleeCombat = customFile.getBoolean("horseCombat.horseMeleeCombat.enabled");
+		stationaryMeleeDamageMultiplier = customFile.getDouble("horseCombat.horseMeleeCombat.stationaryMeleeDamageMultiplier");
+		speedMeleeDamageMultiplier = customFile.getDouble("horseCombat.horseMeleeCombat.speedMeleeDamageMultiplier");
+		horseRangedCombat = customFile.getBoolean("horseCombat.rangedHorseCombat.enabled");
+		onlyArrows = customFile.getBoolean("horseCombat.rangedHorseCombat.onlyArrows");
+		stationaryRangedDamageMultiplier = customFile.getDouble("horseCombat.rangedHorseCombat.stationaryRangedDamageMultiplier");
+		speedRangedDamageMultiplier = customFile.getDouble("horseCombat.rangedHorseCombat.speedRangedDamageMultiplier");
+		notifyMessage = customFile.getString("horseCombat.other.notifyMessage");
+		debug = customFile.getBoolean("horseCombat.other.debug");
 	}
-		
+  		
 	
 	/**
 	 * getter for our custom {@link FileConfiguration}
@@ -64,7 +106,7 @@ public class CustomConfig {
 			customFile.save(fetchConfigFile());
 		} 
 		catch(IOException e) {
-			this.plugin.getLogger().warning("Error saving config, please report this to BoltyDawg:\n" + e.toString());
+			this.plugin.getLogger().warning("Error saving config, please report this to DrkMatr1984:\n" + e.toString());
 		}
 	}
 	
@@ -73,9 +115,9 @@ public class CustomConfig {
 	 */
 	public void reload() {
 		if(!this.file.exists()) {
+			this.plugin.saveDefaultConfig();
 			file = fetchConfigFile();
 			customFile = YamlConfiguration.loadConfiguration(file);
-			addDefaults();
 		}
 		else
 			customFile = YamlConfiguration.loadConfiguration(file);
@@ -88,18 +130,19 @@ public class CustomConfig {
 	 * @return File
 	 */
 	private  File fetchConfigFile() {
-		File file = new File(this.plugin.getDataFolder(), NAME);
+		File file = new File(this.plugin.getDataFolder(), "config.yml");
 		
 		if(!file.exists()) {
 			try {
 				file.createNewFile();
-				this.plugin.getLogger().info("creating " + NAME);
+				this.plugin.getLogger().info("creating " + "config.yml");
 			} 
 			catch (IOException e) {
-				this.plugin.getLogger().warning("Error creating config, please report this to BoltyDawg:\n" + e.toString());
+				this.plugin.getLogger().warning("Error creating config, please report this to DrkMatr1984:\n" + e.toString());
 			}	
 		}
 		
 		return file;
 	}
+	
 }

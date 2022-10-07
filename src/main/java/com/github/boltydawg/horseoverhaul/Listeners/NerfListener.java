@@ -9,12 +9,9 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.world.ChunkLoadEvent;
 
+import com.github.boltydawg.horseoverhaul.HorseOverhaul;
+
 public class NerfListener implements Listener{
-	
-	
-	public static double divisor;
-	public static boolean override;
-	
 	
 	@EventHandler
 	public void onSpawn(CreatureSpawnEvent event){
@@ -26,7 +23,7 @@ public class NerfListener implements Listener{
 				nerf((AbstractHorse)event.getEntity());
 			}
 			
-			else if(override) {
+			else if(HorseOverhaul.instance.config.override) {
 				
 				event.getEntity().addScoreboardTag("ho.isNerfed");
 				
@@ -48,7 +45,7 @@ public class NerfListener implements Listener{
 				}
 			}
 		}
-		else if(override) {
+		else if(HorseOverhaul.instance.config.override) {
 			
 			for(Entity e : event.getChunk().getEntities()) {
 				
@@ -64,16 +61,16 @@ public class NerfListener implements Listener{
 	
 	public static void nerf(AbstractHorse horse) {
 		
-		if(override) {
+		if(HorseOverhaul.instance.config.override) {
 			
 			horse.addScoreboardTag("ho.isNerfed");
 			
 		}
 		
-		horse.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue( horse.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() / divisor );
-		horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue( horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue() / divisor );
+		horse.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue( horse.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() / HorseOverhaul.instance.config.nerfDivisor );
+		horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue( horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue() / HorseOverhaul.instance.config.nerfDivisor );
 		
-		horse.setJumpStrength( horse.getJumpStrength() / divisor );
+		horse.setJumpStrength( horse.getJumpStrength() / HorseOverhaul.instance.config.nerfDivisor );
 		
 	}
 }

@@ -20,7 +20,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import com.github.boltydawg.horseoverhaul.StatHorse;
-import com.github.boltydawg.horseoverhaul.Main;
+import com.github.boltydawg.horseoverhaul.HorseOverhaul;
 
 public class StatsListener implements Listener {
 	
@@ -31,8 +31,6 @@ public class StatsListener implements Listener {
 	*/
 	 
 	public static HashMap<UUID, ArrayList<String>> signStats = new HashMap<UUID, ArrayList<String>>();
-	
-	public static boolean checkStats, untamed;
 	
 	/**
 	 * @param event - event triggered when a player right clicks a horse
@@ -48,7 +46,7 @@ public class StatsListener implements Listener {
 			
 			Player player = event.getPlayer();
 			AbstractHorse abHorse = (AbstractHorse)event.getRightClicked();
-			if(event.isCancelled() || (!abHorse.isTamed() && !untamed) ) {
+			if(event.isCancelled() || (!abHorse.isTamed() && !HorseOverhaul.instance.config.requireTamed) ) {
 				
 				return;
 			}
@@ -57,7 +55,7 @@ public class StatsListener implements Listener {
 					event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.CARROT_ON_A_STICK)) {
 				
 				event.setCancelled(true);
-				player.sendMessage(new StatHorse(abHorse).printStats(!OwnershipListener.ownership));
+				player.sendMessage(new StatHorse(abHorse).printStats(!HorseOverhaul.instance.config.ownershipEnabled));
 				
 				
 				ArrayList<String> stats = new ArrayList<String>();
@@ -80,8 +78,8 @@ public class StatsListener implements Listener {
 				}
 					
 				stats.add("Health: " + roach.getHealth());
-				stats.add("Speed: " + Main.df.format(roach.getSpeed()));
-				stats.add("Jump: " + Main.df.format(roach.getJumpHeight()));
+				stats.add("Speed: " + HorseOverhaul.df.format(roach.getSpeed()));
+				stats.add("Jump: " + HorseOverhaul.df.format(roach.getJumpHeight()));
 				
 				signStats.put(player.getUniqueId(), stats);
 				

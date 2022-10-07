@@ -10,8 +10,8 @@ import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -29,7 +29,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.boltydawg.horseoverhaul.Main;
+import com.github.boltydawg.horseoverhaul.HorseOverhaul;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -39,8 +39,6 @@ public class WhistleListener implements Listener {
 	private static HashMap<UUID,Integer> whistleBlowers = new HashMap<UUID,Integer>();
 	
 	public static ItemStack blankWhistle;
-	
-	public static boolean whistle, craftWhistle, whistleTP;
 	
 	@EventHandler
 	public void onInteract(PlayerInteractEvent event) {
@@ -56,7 +54,7 @@ public class WhistleListener implements Listener {
 				Player player = event.getPlayer();
 				
 				//double check that the horse's uuid is stored in the item
-				String horseId = item.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(Main.instance, "whistle"), PersistentDataType.STRING);
+				String horseId = item.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(HorseOverhaul.instance, "whistle"), PersistentDataType.STRING);
 				if(horseId == null) return;
 				
 				event.setCancelled(true);
@@ -81,34 +79,31 @@ public class WhistleListener implements Listener {
 							}
 							
 						}
-					}.runTaskTimer(Main.instance, 0L, 2L);
+					}.runTaskTimer(HorseOverhaul.instance, 0L, 2L);
 					
 					
 					boolean found = false;	//boolean for whether or not the horse is detected
 					
-					for(Entity e : player.getNearbyEntities(100, 30, 100)) { //search a 100x30x100 radius
-						
-						if(e.getType().equals(EntityType.HORSE)) {
+					for(Entity e : player.getNearbyEntities(100, 30, 100)) { //search a 100x30x100 radius		
+						if(e instanceof AbstractHorse) {						
+							LivingEntity le = (LivingEntity) e;
 							
-							Horse horse = (Horse)e;
-							
-							if( horse.getUniqueId().toString().equals(horseId) ) {
+							if( le.getUniqueId().toString().equals(horseId) ) {
 								
 								found = true;
 								
-								if( WhistleListener.whistleTP ) {
-									horse.teleport(player);
+								if( HorseOverhaul.instance.config.whistleTeleport ) {
+									le.teleport(player);
 								}
 								else {
-									horse.addPotionEffect( new PotionEffect( PotionEffectType.GLOWING, 200, 1, false, false ) );
+									le.addPotionEffect( new PotionEffect( PotionEffectType.GLOWING, 200, 1, false, false ) );
 								}
 								
-								horse.getWorld().playSound(horse.getLocation(), Sound.ENTITY_HORSE_ANGRY, 1.0f, 1.0f);
+								le.getWorld().playSound(le.getLocation(), Sound.ENTITY_HORSE_ANGRY, 1.0f, 1.0f);
 								break;
 								
-							}
+								}
 						}
-						
 					}
 					
 					if(found) {
@@ -138,7 +133,7 @@ public class WhistleListener implements Listener {
 								whistleBlowers.put(player.getUniqueId(), time - 1);
 							}
 						}
-					}.runTaskTimer(Main.instance, 20L, 20L);
+					}.runTaskTimer(HorseOverhaul.instance, 20L, 20L);
 					
 				}
 				
@@ -177,26 +172,22 @@ public class WhistleListener implements Listener {
 				}
 				
 				if(item.isSimilar(WhistleListener.blankWhistle)) {
-					
-					if(! (event.getRightClicked() instanceof Horse) ) {
-						player.sendMessage(ChatColor.YELLOW + "Only horses can hear the sound of your whistle.");
-						
-						event.setCancelled(true);
-						return;
-					}
-					
-					Horse horse = (Horse)event.getRightClicked();
-					
+					AbstractHorse horse = (AbstractHorse) event.getRightClicked();
+								
 					ItemMeta met = item.getItemMeta();
-					met.getPersistentDataContainer().set(new NamespacedKey(Main.instance, "whistle"), PersistentDataType.STRING, horse.getUniqueId().toString());
+					met.getPersistentDataContainer().set(new NamespacedKey(HorseOverhaul.instance, "whistle"), PersistentDataType.STRING, horse.getUniqueId().toString());
 					
-					if(horse.getCustomName() == null) {
-						String color = horse.getColor().name();
+					if(horse.getCustomName() == null && horse instanceof Horse) {
+						String color = ((Horse)horse).getColor().name();
 						color = color.toCharArray()[0] + color.substring(1).toLowerCase();
 						met.setDisplayName(ChatColor.YELLOW + color + " Horse's Whistle");
 					}
-					else {
+					else if (horse.getCustomName() != null){
 						met.setDisplayName(ChatColor.YELLOW + horse.getName() + "'s Whistle");
+					}else {
+						String type = horse.getType().name();
+						type = type.toCharArray()[0] + type.substring(1).toLowerCase();
+						met.setDisplayName(ChatColor.YELLOW + type + "'s Whistle");
 					}
 					
 					
@@ -209,8 +200,7 @@ public class WhistleListener implements Listener {
 						t.setItemMeta(met);
 						player.getInventory().addItem(t);
 					}
-					
-					
+									
 					player.sendMessage(ChatColor.YELLOW + "Whistle Carved!");
 					player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1.0f, 2.0f);
 					event.setCancelled(true);

@@ -27,7 +27,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.boltydawg.horseoverhaul.Main;
+import com.github.boltydawg.horseoverhaul.HorseOverhaul;
 import com.github.boltydawg.horseoverhaul.NamePrompt;
 
 import net.md_5.bungee.api.ChatColor;
@@ -37,9 +37,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class OwnershipListener implements Listener {
 		
 	public static ItemStack blankDeed;
-	
-	public static boolean ownership, coloredNames, craftDeed;
-	
 	
 	private static ItemStack getDeed(UUID horseID, String horsey, UUID pID, String pname) {
 		
@@ -119,7 +116,7 @@ public class OwnershipListener implements Listener {
 					abHorse.setOwner(null);
 					abHorse.setTamed(true);
 				}
-			}.runTaskLater(Main.instance, 1L);
+			}.runTaskLater(HorseOverhaul.instance, 1L);
 			
 		}
 	}
@@ -239,7 +236,7 @@ public class OwnershipListener implements Listener {
 									abHorse.getWorld().playSound(abHorse.getLocation(), Sound.ENTITY_CHICKEN_EGG, 0.9f, 1.3f);
 									player.sendMessage(ChatColor.RED + ("You have successfully neutered "+ abHorse.getCustomName() + ". He/she will never breed."));
 								}
-							}.runTaskLater(Main.instance, 20L);
+							}.runTaskLater(HorseOverhaul.instance, 20L);
 							
 						}
 					}
@@ -265,7 +262,7 @@ public class OwnershipListener implements Listener {
 						
 						player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
 						
-						ConversationFactory cf = new ConversationFactory(Main.instance);
+						ConversationFactory cf = new ConversationFactory(HorseOverhaul.instance);
 						Conversation conv = cf.withFirstPrompt(new NamePrompt(player,abHorse)).withLocalEcho(true).buildConversation(player);
 						conv.begin();
 						
@@ -327,7 +324,7 @@ public class OwnershipListener implements Listener {
 		info += "in world: " + abHorse.getWorld().getName() 
 				+ ", at coords: x=" + (int)abHorse.getLocation().getX() + " y=" + (int)abHorse.getLocation().getY() + " z=" + (int)abHorse.getLocation().getZ();
 		
-		Main.instance.getLogger().info(info);
+		HorseOverhaul.instance.getLogger().info(info);
 		
 		new BukkitRunnable() {
 			
@@ -337,7 +334,7 @@ public class OwnershipListener implements Listener {
 				player.getInventory().addItem(getDeed(abHorse.getUniqueId(), abHorse.getCustomName(), player.getUniqueId(), player.getName()));
 				
 			}
-		}.runTaskLater(Main.instance, 4);
+		}.runTaskLater(HorseOverhaul.instance, 4);
 		
 		
 	}

@@ -1,0 +1,53 @@
+# HorseOverhaul Configuration
+#
+# Anytime you change an option here be sure to run the command "/horseo reload"
+#
+# See https://www.spigotmc.org/resources/horse-overhaul.75448/ for more information about each option
+
+##  Auto Gear - Equip saddles and armor by right clicking on horse
+autoGear:
+  enabled: true
+  saddles: true
+  horseArmor: true
+betterBreeding:
+  enabled: true
+  foodEffects: true
+checkStats:
+  enabled: true
+  requireTamed: true
+ownership:
+  enabled: true
+  craftingRecipe: true
+  coloredNames: false
+nerfWildSpawns:
+  enabled: false
+  divisor: 1.5
+  override: false
+whistles:
+  enabled: true
+  craftingRecipe: true
+  teleport: false
+##  HorseCombat - Increase damage done with while mounted on horses
+horseCombat:
+  horseCombat: true
+  ##  Melee Combat - Increase damage done with melee weapons while mounted on horses
+  meleeHorseCombat:
+    enabled: true
+    # This is bonus damage just for melee attacks while riding a horse.
+    stationaryMeleeDamageMultiplier: 1.0
+    # This value is multiplied with your speed and added to your melee damage. 2-4 are reasonable values
+    speedMeleeDamageMultiplier: 3.0
+  ##  Ranged Combat - Increase damage done with projectiles while mounted on horses
+  rangedHorseCombat:
+    enabled: true
+    onlyArrows: false
+    # This is bonus damage just for ranged attacks while riding a horse.
+    stationaryRangedDamageMultiplier: 1.0
+    # This value is multiplied with your speed and added to your ranged damage. 2-4 are reasonable values
+    speedRangedDamageMultiplier: 1.0
+  other:
+    # This message is sent to the player to notify them of their damage being boosted. Set to '' to disable.
+    notifyMessage: '&eAttack damage is boosted on horseback. Damage increases with
+      the horses speed.'
+    # This sends messages about damage boosts to the player.
+    debug: false
